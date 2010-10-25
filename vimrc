@@ -196,10 +196,9 @@ set mousehide  " Hide mouse after chars typed
 set mouse=a  " Mouse in all modes
 
 "-------------------------------------------------
-map <Leader>t :FuzzyFinderTextMate<CR>
-map <leader>u :FuzzyFinderBuffer<CR>
+" map <Leader>t :FuzzyFinderTextMate<CR>
+" map <leader>u :FuzzyFinderBuffer<CR>
 map <leader>d :execute 'NERDTreeToggle ' . getcwd()<CR>
-
 "-------------------------------------------------
 " For opening files from the same directory as the current file:
 map <leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
