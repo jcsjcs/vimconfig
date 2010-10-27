@@ -2,14 +2,14 @@
 " STUFF TO REMEMBER
 " -----------------
 " F5 = Strip trailing whitespace from the file
-" ,d = Show/Hide NERDTree
+" ,z = Show/Hide NERDTree
 " ,h = Hide search highlights
 " ,k = Toggle display of scratchpad
 " ,w = Show/Hide whitespace characters
 " ,t = FuzzyFinder file search
 " ,u = FuzzyFinder buffer search
 " ,p = Toggle spellcheck on and off
-" ,c = Edit .vimrc in a new tab
+" ,x = Edit .vimrc in a new tab
 " CTRL -up/down = move line (or visual selection) up/down
 " ----- Open file from same dir as current file:
 " ,ew = Open in this window
@@ -34,9 +34,9 @@
 " ,s  :step
 " ,f  :finish
 " ,n  :next
-" ,r  :continue [plugin default is ,c]
+" ,c  :continue
 " ,e  :exit
-" ,x  :remove_breakpoints [plugin default is ,d]
+" ,d  :remove_breakpoints
 " -----
 "=====================================================
 " aid TO LEARNING VIM: disable arrow keys:
@@ -130,7 +130,7 @@ if has("autocmd")
 endif
 
 " Edit .vimrc file
-nmap <leader>c :tabedit $MYVIMRC<CR>
+nmap <leader>x :tabedit $MYVIMRC<CR>
 
 " COLOURSCHEME :
 " For the molokai colourscheme:
@@ -198,7 +198,7 @@ set mouse=a  " Mouse in all modes
 "-------------------------------------------------
 " map <Leader>t :FuzzyFinderTextMate<CR>
 " map <leader>u :FuzzyFinderBuffer<CR>
-map <leader>d :execute 'NERDTreeToggle ' . getcwd()<CR>
+map <leader>z :execute 'NERDTreeToggle ' . getcwd()<CR>
 "-------------------------------------------------
 " For opening files from the same directory as the current file:
 map <leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
@@ -207,7 +207,7 @@ map <leader>ev :vsp <C-R>=expand("%:p:h") . "/" <CR>
 map <leader>et :tabe <C-R>=expand("%:p:h") . "/" <CR>
 "-------------------------------------------------
 " Save a root-permission file with sudo after opening as user:
-cmap W w !sudo tee % >/dev/null
+"cmap W w !sudo tee % >/dev/null
 "-------------------------------------------------
 " Visual mode - press r to replace text without yanking replaced text:
 vmap r "_dP

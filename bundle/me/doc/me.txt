@@ -1,0 +1,40 @@
+*me.txt*  Help for listing config settings
+
+
+HELPME                                          *me*
+
+  Keyseq               Does ~
+  ,z                   Toggle NERDTree
+  ,x                   Opens vimrc in tab
+  ,h                   Hide search highlights
+  ,k                   Toggle display of scratchpad
+  ,w                   Show/Hide whitespace characters
+  ,p                   Toggle spellcheck on and off
+  Debugger             Ruby Debugger ~
+  ,b                   toggle_breakpoint
+  ,v                   open_variables
+  ,m                   open_breakpoints
+  ,t                   open_frames
+  ,s                   step
+  ,f                   finish
+  ,n                   next
+  ,c                   continue
+  ,e                   exit
+  ,d                   remove_breakpoints
+  Open files           Open from same dir as current file ~
+  ,ew                  Open in this window
+  ,es                  Open in split window
+  ,ev                  Open in vertical split
+  ,et                  Open in new tab
+  
+  Command              Does ~
+  :DiffOrig            Show a diff between the current buffer and the file it was loaded from.
+  RB                   Open the Ruby ApiDock page for the word under cursor, in a new Firefox tab.
+  RR                   Open the Rails ApiDock page for the word under cursor, in a new Firefox tab.
+  :RF                  Fold file according to Ruby rules
+  <F5>                 Strip trailing whitespace from the file.
+
+  Surround.
+  Select visually. type 'st' then some string like div then '>'. Encloses text in '<div>'.
+
+Here are things to remember.
