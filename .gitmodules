@@ -37,3 +37,6 @@
 [submodule "bundle/snippets"]
 	path = bundle/snippets
 	url = git://github.com/rafaelfranca/snipmate-snippets.git
+[submodule "bundle/jslint"]
+	path = bundle/jslint
+	url = https://github.com/hallettj/jslint.vim.git
