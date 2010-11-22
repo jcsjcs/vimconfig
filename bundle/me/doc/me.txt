@@ -4,23 +4,24 @@
 HELPME                                          *me*
 
   Keyseq               Does ~
-  ,z                   Toggle NERDTree
-  ,x                   Opens vimrc in tab
   ,h                   Hide search highlights
   ,k                   Toggle display of scratchpad
-  ,w                   Show/Hide whitespace characters
+  ,o                   Open Command-T filesearch
   ,p                   Toggle spellcheck on and off
+  ,w                   Show/Hide whitespace characters
+  ,x                   Opens vimrc in tab
+  ,z                   Toggle NERDTree
   Debugger             Ruby Debugger ~
   ,b                   toggle_breakpoint
-  ,v                   open_variables
-  ,m                   open_breakpoints
-  ,t                   open_frames
-  ,s                   step
-  ,f                   finish
-  ,n                   next
   ,c                   continue
-  ,e                   exit
   ,d                   remove_breakpoints
+  ,e                   exit
+  ,f                   finish
+  ,m                   open_breakpoints
+  ,n                   next
+  ,s                   step
+  ,t                   open_frames
+  ,v                   open_variables
   Open files           Open from same dir as current file ~
   ,ew                  Open in this window
   ,es                  Open in split window

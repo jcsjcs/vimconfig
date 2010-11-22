@@ -131,6 +131,7 @@ endif
 
 " Edit .vimrc file
 nmap <leader>x :tabedit $MYVIMRC<CR>
+map <leader>o :CommandT<CR>
 
 " COLOURSCHEME :
 " For the molokai colourscheme:

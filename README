@@ -18,3 +18,14 @@ Install a new plugin from gitHub:
   git add .
   git commit -m "Install Fugitive.vim bundle as a submodule."
 
+Install a vimball:
+
+  Open .vba file in vim
+  :UseVimball ~/.vim/bundle/newpath
+
+Then run make etc as required (eg for Command-T:)
+
+  cd ~/.vim/bundle/command-t/ruby/command-t
+  ruby extconf.rb
+  make
+
