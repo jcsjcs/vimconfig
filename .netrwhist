@@ -1,4 +1,7 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =2
-let g:netrw_dirhist_1='/usr/lib/ruby/gems/1.8/gems/rubyzip-0.9.1'
-let g:netrw_dirhist_2='/usr/lib/ruby/gems/1.8/gems/rubyzip-0.9.1/samples'
+let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_1='/usr/lib/ruby/gems/1.8/gems/rbcdio-0.05/ext'
+let g:netrw_dirhist_2='/usr/lib/ruby/gems/1.8/gems/rbcdio-0.05/ext/cdio'
+let g:netrw_dirhist_3='/usr/lib/ruby/gems/1.8/gems/rbcdio-0.05/example'
+let g:netrw_dirhist_4='/usr/lib/ruby/1.8/rexml'
+let g:netrw_dirhist_5='/usr/lib/ruby/gems/1.8/gems/rails-dbi-0.1.2'
