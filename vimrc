@@ -2,6 +2,7 @@
 " STUFF TO REMEMBER
 " -----------------
 " F5 = Strip trailing whitespace from the file
+" F6 = Toggle Gundo tree (Graph of undo tree)
 " ,z = Show/Hide NERDTree
 " ,h = Hide search highlights
 " ,k = Toggle display of scratchpad
@@ -236,6 +237,9 @@ function! <SID>StripTrailingWhitespaces()
 endfunction
 
 nnoremap <silent> <F5> :call <SID>StripTrailingWhitespaces()<CR>
+"-------------------------------------------------
+" Graph of undo tree:
+nnoremap <F5> :GundoToggle<CR>
 "-------------------------------------------------
 
 " Toggle the Scratch pad with ,k
