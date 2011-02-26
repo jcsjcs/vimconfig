@@ -11,6 +11,7 @@ HELPME                                          *me*
   ,w                   Show/Hide whitespace characters
   ,x                   Opens vimrc in tab
   ,z                   Toggle NERDTree
+
   Debugger             Ruby Debugger ~
   ,b                   toggle_breakpoint
   ,c                   continue
@@ -22,12 +23,13 @@ HELPME                                          *me*
   ,s                   step
   ,t                   open_frames
   ,v                   open_variables
+
   Open files           Open from same dir as current file ~
   ,ew                  Open in this window
   ,es                  Open in split window
   ,ev                  Open in vertical split
   ,et                  Open in new tab
-  
+
   Command              Does ~
   :DiffOrig            Show a diff between the current buffer and the file it was loaded from.
   RB                   Open the Ruby ApiDock page for the word under cursor, in a new Firefox tab.
@@ -35,7 +37,23 @@ HELPME                                          *me*
   :RF                  Fold file according to Ruby rules
   <F5>                 Strip trailing whitespace from the file.
 
-  Surround.
-  Select visually. type 'st' then some string like div then '>'. Encloses text in '<div>'.
 
-Here are things to remember.
+Here are some things to remember:
+
+  Thing                What it does ~
+  var                  Visually select the surrounding Ruby block.
+  vir                  Visually select the content within the surrounding Ruby block.
+  Ctrl-e/y             Scroll display up/down a line without moving cursor.
+  gv                   Re-select last visual selection.
+  diw                  Delete entire word - wherever cursor is.
+  :%s/<c-v><c-m>//     Remove ^M (Windows enter char)
+
+  Surround             Does ~
+  st                   Enclose visually selected text in tag. Type 'st' then some string like div then '>'. Encloses text in '<div>'.
+  dit                  Delete inner tag content.
+  dst                  Delete surrounding tag.
+  s' etc               Add surround to visual selection - ' or whatever (, {, ".
+  ds'                  and ds", ds{, ds[, ds(: delete surrounds ('', "", {}, (), [])
+  di'                  and di", di{, di[, di(: delete content inside the given surround
+  da'                  and da", da{, da[, da(: delete all content of the given surround, including the surround characters
+
