@@ -29,3 +29,12 @@ Then run make etc as required (eg for Command-T:)
   ruby extconf.rb
   make
 
+Change tracked version of a submodule:
+
+  cd bundle/submod/
+  git remote update
+  git merge origin/master
+  cd ../..
+  git commit -m 'xxx' -a
+  git push
+
