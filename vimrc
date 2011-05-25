@@ -239,7 +239,7 @@ endfunction
 nnoremap <silent> <F5> :call <SID>StripTrailingWhitespaces()<CR>
 "-------------------------------------------------
 " Graph of undo tree:
-nnoremap <F5> :GundoToggle<CR>
+nnoremap <F6> :GundoToggle<CR>
 "-------------------------------------------------
 
 " Toggle the Scratch pad with ,k
