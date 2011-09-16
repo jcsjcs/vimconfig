@@ -52,9 +52,11 @@
 " imap <right> <nop>
 
 " Pathogen plugin - handle plugins in the bundles folder
-call pathogen#runtime_append_all_bundles()
-call pathogen#helptags()
+" call pathogen#runtime_append_all_bundles()
+" call pathogen#helptags()
+call pathogen#infect()
 
+syntax on
 filetype on  " Automatically detect file types.
 set nocompatible  " We don't want vi compatibility.
 
@@ -101,7 +103,7 @@ let g:netrw_preview=1 " preview window shown in a vertically split
 " Change which file opens after executing :Rails command
 let g:rails_default_file='config/database.yml'
 
-syntax enable
+"syntax enable
 
 " Force the terminal to 256 colours.
 " Otherwise the molokai theme will not work/
