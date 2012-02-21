@@ -11,6 +11,7 @@ HELPME                                          *me*
   ,w                   Show/Hide whitespace characters
   ,x                   Opens vimrc in tab
   ,z                   Toggle NERDTree
+  ALT-up/down          Move line (or visual selection) up or down.
 
   Debugger             Ruby Debugger ~
   ,b                   toggle_breakpoint
@@ -32,10 +33,12 @@ HELPME                                          *me*
 
   Command              Does ~
   :DiffOrig            Show a diff between the current buffer and the file it was loaded from.
-  RB                   Open the Ruby ApiDock page for the word under cursor, in a new Firefox tab.
-  RR                   Open the Rails ApiDock page for the word under cursor, in a new Firefox tab.
+  RB                   Open the Ruby ApiDock page for the word under cursor, in a new browser tab.
+  RR                   Open the Rails ApiDock page for the word under cursor, in a new browser tab.
   :RF                  Fold file according to Ruby rules
   <F5>                 Strip trailing whitespace from the file.
+  <F6>                 Toggle Gundo tree (Graph of undo tree).
+  <F7>                 Toggle tagslist (list of classes & methods in code).
 
 
 Here are some things to remember:
@@ -57,3 +60,14 @@ Here are some things to remember:
   di'                  and di", di{, di[, di(: delete content inside the given surround
   da'                  and da", da{, da[, da(: delete all content of the given surround, including the surround characters
 
+  Search               Does ~
+  :g/                  Show list of all matches from previous "/" search.
+  :g/pattern           Show list of all matches from search for pattern.
+  CTRL-Y               Copies mouse-selected text to clipboard.
+
+  :vimgrep /pattern/ % Search (saved) current file for all occurrences of pattern.
+  :copen               Open window of search results.
+
+  qaq                  Clear register a.
+  :g/pattern/y A       Search for all occurrences of pattern and append to register a.
+  :let @+ = @a         Copy register a into the clipboard.

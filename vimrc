@@ -3,6 +3,7 @@
 " -----------------
 " F5 = Strip trailing whitespace from the file
 " F6 = Toggle Gundo tree (Graph of undo tree)
+" F7 = Toggle tagslist (list of classes & methods in code)
 " ,z = Show/Hide NERDTree
 " ,h = Hide search highlights
 " ,k = Toggle display of scratchpad
@@ -11,7 +12,7 @@
 " ,u = FuzzyFinder buffer search
 " ,p = Toggle spellcheck on and off
 " ,x = Edit .vimrc in a new tab
-" CTRL -up/down = move line (or visual selection) up/down
+" ALT -up/down = move line (or visual selection) up/down
 " ----- Open file from same dir as current file:
 " ,ew = Open in this window
 " ,es = Open in split window
@@ -23,8 +24,8 @@
 " -----
 " :DiffOrig = Show a diff between the current buffer and the file it was loaded from.
 " -----
-" RB Open the Ruby ApiDock page for the word under cursor, in a new Firefox tab
-" RR Open the Rails ApiDock page for the word under cursor, in a new Firefox tab
+" RB Open the Ruby ApiDock page for the word under cursor, in a new browser tab
+" RR Open the Rails ApiDock page for the word under cursor, in a new browser tab
 " :RF Fold file according to Ruby rules
 " -----
 " RUBY DEBUGGER plugin:
@@ -51,14 +52,52 @@
 " imap <left> <nop>
 " imap <right> <nop>
 
+set nocompatible  " We don't want vi compatibility.
 " Pathogen plugin - handle plugins in the bundles folder
 " call pathogen#runtime_append_all_bundles()
 " call pathogen#helptags()
-call pathogen#infect()
+"call pathogen#infect()
+filetype off                   " required!
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" let Vundle manage Vundle
+" required! 
+Bundle 'gmarik/vundle'
+
+Bundle 'scrooloose/syntastic'
+Bundle 'tpope/vim-fugitive'
+"yuriyvolkov/vim-snipmate
+"rafaelfranca/snipmate-snippets
+"
+"astashov/vim-ruby-debugger
+Bundle 'scrooloose/nerdtree'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'tpope/vim-surround'
+Bundle 'tpope/vim-rails'
+Bundle 'tsaleh/vim-align'
+Bundle 'tpope/vim-markdown'
+Bundle 'hallettj/jslint.vim'
+Bundle 'kana/vim-textobj-user'
+Bundle 'nelstrom/vim-textobj-rubyblock'
+Bundle 'tomtom/tcomment_vim'
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'tsaleh/vim-shoulda'
+Bundle 'tpope/vim-repeat'
+Bundle 'sjl/gundo.vim'
+Bundle 'fholgado/minibufexpl.vim'
+Bundle 'vim-scripts/grep.vim'
+Bundle 'scratch'
+
+Bundle 'git://git.wincent.com/command-t.git'
+" My help docs - Useage: ':help me'
+Bundle 'me'
 
 syntax on
-filetype on  " Automatically detect file types.
-set nocompatible  " We don't want vi compatibility.
+filetype plugin indent on     " required! 
+
+"filetype on  " Automatically detect file types.
 
 set hidden " Manage buffers well - remember undo's etc.
 let mapleader = ","
@@ -103,15 +142,6 @@ let g:netrw_preview=1 " preview window shown in a vertically split
 " Change which file opens after executing :Rails command
 let g:rails_default_file='config/database.yml'
 
-"syntax enable
-
-" Force the terminal to 256 colours.
-" Otherwise the molokai theme will not work/
-set t_Co=256
-" if &t_Co > 2 || has("gui_running")
-"   " Enable syntax highlighting
-"   syntax on
-" endif
 if has("autocmd")
   " Enable filetype detection
   filetype plugin indent on
@@ -137,12 +167,23 @@ nmap <leader>x :tabedit $MYVIMRC<CR>
 map <leader>o :CommandT<CR>
 
 " COLOURSCHEME :
+" Force the terminal to 256 colours.
+" Otherwise the molokai theme will not work/
+"set t_Co=256
 " For the molokai colourscheme:
 " - 0 has a darker bg and darker comment text.
-let g:molokai_original = 1
+"let g:molokai_original = 1
 " colorscheme murphy
 " colorscheme vividchalk
-colorscheme molokai
+"colorscheme molokai
+
+"peaksea colour:
+if ! has("gui_running") 
+  set t_Co=256 
+endif 
+" feel free to choose :set background=light for a different style 
+set background=dark 
+colors peaksea 
 
 set cf  " Enable error files & error jumping.
 " set clipboard+=unnamed  " Yanks go on clipboard instead.
@@ -159,10 +200,10 @@ set timeoutlen=250  " Time to wait after ESC (default causes an annoying delay)
 "hi MBEVisibleNormal guifg=green guibg=black ctermfg=green ctermbg=black
 "hi MBEVisibleChanged guifg=lightgreen guibg=black ctermfg=white ctermbg=lightgreen
 
-hi link MBENormal String 
-hi link MBEChanged Number
-hi link MBEVisibleNormal Identifier
-hi link MBEVisibleChanged Keyword
+" hi link MBENormal String 
+" hi link MBEChanged Number
+" hi link MBEVisibleNormal Identifier
+" hi link MBEVisibleChanged Keyword
 
 " Formatting
 set ts=2          " Tabs are 2 spaces
@@ -218,11 +259,11 @@ vmap r "_dP
 
 "-------------------------------------------------
 " Bubble single lines
-nmap <C-Up> ddkP
-nmap <C-Down> ddp
+nmap <M-Up> ddkP
+nmap <M-Down> ddp
 " Bubble multiple lines
-vmap <C-Up> xkP`[V`]
-vmap <C-Down> xp`[V`]
+vmap <M-Up> xkP`[V`]
+vmap <M-Down> xp`[V`]
 "-------------------------------------------------
 
 " Strip trailing blanks from the whole file:
@@ -243,6 +284,12 @@ nnoremap <silent> <F5> :call <SID>StripTrailingWhitespaces()<CR>
 " Graph of undo tree:
 nnoremap <F6> :GundoToggle<CR>
 "-------------------------------------------------
+" Toggle tagslist
+nnoremap <silent> <F7> :TlistToggle<CR>
+let Tlist_Exit_OnlyWindow = 1     " exit if taglist is last window open
+let Tlist_Show_One_File = 1       " Only show tags for current buffer
+let Tlist_Enable_Fold_Column = 0  " no fold column (only showing one file)
+"-------------------------------------------------
 
 " Toggle the Scratch pad with ,k
 function! ToggleScratch()
@@ -256,15 +303,16 @@ endfunction
 map <leader>k :call ToggleScratch()<CR>
 "-------------------------------------------------
 
-let g:browser = 'firefox -new-tab '
-" Open the Ruby ApiDock page for the word under cursor, in a new Firefox tab
+"let g:browser = 'firefox -new-tab '
+let g:browser = 'google-chrome -new-tab '
+" Open the Ruby ApiDock page for the word under cursor, in a new browser tab
 function! OpenRubyDoc(keyword)
   let url = 'http://apidock.com/ruby/'.a:keyword
   exec '!'.g:browser.' '.url.' &'
 endfunction
 noremap RB :call OpenRubyDoc(expand('<cword>'))<CR>
 
-" Open the Rails ApiDock page for the word under cursos, in a new Firefox tab
+" Open the Rails ApiDock page for the word under cursos, in a new browser tab
 function! OpenRailsDoc(keyword)
  let url = 'http://apidock.com/rails/'.a:keyword
  exec '!'.g:browser.' '.url.' &'
