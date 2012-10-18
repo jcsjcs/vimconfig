@@ -31,6 +31,10 @@ HELPME                                          *me*
   ,ev                  Open in vertical split
   ,et                  Open in new tab
 
+  Buffers              Closing and jumping
+  ,D                   Close all open buffers
+  ,,                   Switch between last two buffers
+
   Command              Does ~
   :DiffOrig            Show a diff between the current buffer and the file it was loaded from.
   RB                   Open the Ruby ApiDock page for the word under cursor, in a new browser tab.
@@ -39,6 +43,7 @@ HELPME                                          *me*
   <F5>                 Strip trailing whitespace from the file.
   <F6>                 Toggle Gundo tree (Graph of undo tree).
   <F7>                 Toggle tagslist (list of classes & methods in code).
+  <F8>                 Show YankRing (:YRShow). Shared clipboard, C-p & C-n to cycle yanked text.
 
 
 Here are some things to remember:
@@ -50,6 +55,7 @@ Here are some things to remember:
   gv                   Re-select last visual selection.
   diw                  Delete entire word - wherever cursor is.
   :%s/<c-v><c-m>//     Remove ^M (Windows enter char)
+  :let g:syntastic_ruby_exec = '~/.rvm/rubies/ruby-1.9.3-p0/bin/ruby'   Make SynTastic use Ruby 1.9 for syntax checking.
 
   Surround             Does ~
   st                   Enclose visually selected text in tag. Type 'st' then some string like div then '>'. Encloses text in '<div>'.
