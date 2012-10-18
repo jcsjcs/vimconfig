@@ -4,6 +4,7 @@
 " F5 = Strip trailing whitespace from the file
 " F6 = Toggle Gundo tree (Graph of undo tree)
 " F7 = Toggle tagslist (list of classes & methods in code)
+" F8 = Show YankRing (:YRShow)
 " ,z = Show/Hide NERDTree
 " ,h = Hide search highlights
 " ,k = Toggle display of scratchpad
@@ -26,7 +27,6 @@
 " -----
 " RB Open the Ruby ApiDock page for the word under cursor, in a new browser tab
 " RR Open the Rails ApiDock page for the word under cursor, in a new browser tab
-" :RF Fold file according to Ruby rules
 " -----
 " RUBY DEBUGGER plugin:
 " ,b  :toggle_breakpoint
@@ -76,6 +76,7 @@ Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-rails'
+Bundle 'tpope/vim-unimpaired'
 Bundle 'tsaleh/vim-align'
 Bundle 'tpope/vim-markdown'
 Bundle 'hallettj/jslint.vim'
@@ -89,15 +90,18 @@ Bundle 'sjl/gundo.vim'
 Bundle 'fholgado/minibufexpl.vim'
 Bundle 'vim-scripts/grep.vim'
 Bundle 'scratch'
+Bundle 'YankRing.vim'
+Bundle 'miripiruni/CSScomb-for-Vim'
 
 Bundle 'git://git.wincent.com/command-t.git'
-" My help docs - Useage: ':help me'
+" My help docs - Usage: ':help me'
+" Included here as a bundle even though it is not hosted on github.
+" Required for the help command to find it, but will dispay error during
+" :BundleInstall
 Bundle 'me'
 
 syntax on
 filetype plugin indent on     " required! 
-
-"filetype on  " Automatically detect file types.
 
 set hidden " Manage buffers well - remember undo's etc.
 let mapleader = ","
@@ -125,6 +129,9 @@ nmap <silent> <leader>h :silent :nohlsearch<CR>
 set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 
+" Treat all numbers as decimal (not octal)
+set nrformats=
+
 " Add recently accessed projects menu (project plugin)
 set viminfo^=!
 
@@ -133,6 +140,7 @@ let g:miniBufExplMapWindowNavVim = 1    " CTRL + [hjkl] to nav windows
 let g:miniBufExplMapWindowNavArrows = 1 " CTRL + arrow keys
 let g:miniBufExplMapCTabSwitchBufs = 1  " CTRL-Tab and CTRL-SHift-Tab to switch buffers
 let g:miniBufExplModSelTarget = 1       " Avoid opening a buffer in the NERDTree window
+let g:miniBufExplCheckDupeBufs = 0      " Avoid duplicate buffer check... https://github.com/fholgado/minibufexpl.vim/issues/6
 
 " File explorer settings:
 let g:netrw_liststyle=3 " Use tree-mode as default view
@@ -144,7 +152,7 @@ let g:rails_default_file='config/database.yml'
 
 if has("autocmd")
   " Enable filetype detection
-  filetype plugin indent on
+  " filetype plugin indent on - already set...
 
   " Source the vimrc file after saving it
   autocmd bufwritepost .vimrc source $MYVIMRC
@@ -169,21 +177,23 @@ map <leader>o :CommandT<CR>
 " COLOURSCHEME :
 " Force the terminal to 256 colours.
 " Otherwise the molokai theme will not work/
-"set t_Co=256
+set t_Co=256
 " For the molokai colourscheme:
 " - 0 has a darker bg and darker comment text.
 "let g:molokai_original = 1
 " colorscheme murphy
 " colorscheme vividchalk
 "colorscheme molokai
+colorscheme codeschool
+autocmd User Rails let b:surround_{char2nr('-')} = "<% \r %>" " displays <% %> correctly
 
-"peaksea colour:
-if ! has("gui_running") 
-  set t_Co=256 
-endif 
-" feel free to choose :set background=light for a different style 
-set background=dark 
-colors peaksea 
+" "peaksea colour:
+" if ! has("gui_running") 
+"   set t_Co=256 
+" endif 
+" " feel free to choose :set background=light for a different style 
+" set background=dark 
+" colors peaksea 
 
 set cf  " Enable error files & error jumping.
 " set clipboard+=unnamed  " Yanks go on clipboard instead.
@@ -199,11 +209,13 @@ set timeoutlen=250  " Time to wait after ESC (default causes an annoying delay)
 "hi MBEChanged guifg=yellow guibg=black ctermfg=white ctermbg=lightblue
 "hi MBEVisibleNormal guifg=green guibg=black ctermfg=green ctermbg=black
 "hi MBEVisibleChanged guifg=lightgreen guibg=black ctermfg=white ctermbg=lightgreen
-
-" hi link MBENormal String 
-" hi link MBEChanged Number
-" hi link MBEVisibleNormal Identifier
-" hi link MBEVisibleChanged Keyword
+" MiniBufExpl Colors
+hi MBEVisibleActive guifg=#A6DB29 guibg=bg ctermfg=green ctermbg=bg
+hi MBEVisibleChangedActive guifg=#F1266F guibg=bg ctermfg=magenta ctermbg=bg
+hi MBEVisibleChanged guifg=#F1266F guibg=bg ctermfg=magenta ctermbg=bg
+hi MBEVisibleNormal guifg=#5DC2D6 guibg=bg ctermfg=lightblue ctermbg=bg
+hi MBEChanged guifg=#CD5907 guibg=bg ctermfg=brown ctermbg=bg
+hi MBENormal guifg=#808080 guibg=bg ctermfg=gray ctermbg=bg
 
 " Formatting
 set ts=2          " Tabs are 2 spaces
@@ -235,7 +247,8 @@ set laststatus=2  " Always show status line.
 " set statusline+=%*
 let g:syntastic_enable_signs=1
 let g:syntastic_auto_loc_list=1
-
+" Try to use Ruby1.9 for syntax validation:
+"let g:syntastic_ruby_exec = '~/.rvm/rubies/ruby-1.9.3-p0/bin/ruby'
 " gvim "specific
 set mousehide  " Hide mouse after chars typed
 set mouse=a  " Mouse in all modes
@@ -253,9 +266,11 @@ map <leader>et :tabe <C-R>=expand("%:p:h") . "/" <CR>
 "-------------------------------------------------
 " Save a root-permission file with sudo after opening as user:
 "cmap W w !sudo tee % >/dev/null
+"cmap w!! %!sudo tee > /dev/null %
 "-------------------------------------------------
 " Visual mode - press r to replace text without yanking replaced text:
-vmap r "_dP
+"vmap r "_dP
+vmap r "_c<Esc>pp
 
 "-------------------------------------------------
 " Bubble single lines
@@ -264,6 +279,12 @@ nmap <M-Down> ddp
 " Bubble multiple lines
 vmap <M-Up> xkP`[V`]
 vmap <M-Down> xp`[V`]
+"-------------------------------------------------
+" Close all buffers
+nmap <leader>D :bufdo bd<CR>
+ 
+" Switch between last two buffers
+nnoremap <leader><leader> <C-^>
 "-------------------------------------------------
 
 " Strip trailing blanks from the whole file:
@@ -289,6 +310,10 @@ nnoremap <silent> <F7> :TlistToggle<CR>
 let Tlist_Exit_OnlyWindow = 1     " exit if taglist is last window open
 let Tlist_Show_One_File = 1       " Only show tags for current buffer
 let Tlist_Enable_Fold_Column = 0  " no fold column (only showing one file)
+"-------------------------------------------------
+
+" YankRing - shared clipboard
+nnoremap <silent> <F8> :YRShow<CR>
 "-------------------------------------------------
 
 " Toggle the Scratch pad with ,k
@@ -338,123 +363,4 @@ function MyBufEnter()
 endfunction
 au BufEnter * call MyBufEnter()
 "-------------------------------------------------
-
-
-" REST OF FILE = FOLDING (USE RR COMMAND)
-
-" FoldSearch-based folding.
-" Copyright (C) 2005 Mauricio Fernandez <mfp@acm.org>
-" Current version: http://eigenclass.org/hiki.rb?Usable+Ruby+folding+for+Vim
-"
-" Add this to your .vimrc and fold with :R. The default fold expression will
-" work with Ruby scripts; you can specify where folds start with
-" let b:foldsearchexpr = 'myexpression'
-" e.g.
-"  let b:foldsearchexpr='\(^\s*\(\(private\|public\|protected\|class\)\s\)\)'
-" or so for Java.
-" One way to have this buffer-local variable set is
-" au Filetype java let b:foldsearchexpr='\(^\s*\(\(private\|public\|protected\|class\)\s\)\)'
-"
-" It is possible to have comments above a method/class/etc be included in the
-" fold, by setting b:foldsearchprefix. All the lines above the detected fold
-" matching b:foldsearchprefix will be included in said fold.
-" For instance, for Ruby code:
-"   let b:foldsearchprefix = '\v^\s*(#.*)?$'
-" which can be automated with
-"   au Filetype ruby let b:foldsearchprefix='\v^\s*(#.*)?$'
-"
-" Changelog:
-" 2005-12-12  1.1  use b:foldsearchprefix to prepend comments to a fold.
-
-"{{{ set s:sid
-
-map <SID>xx <SID>xx
-let s:sid = maparg("<SID>xx")
-unmap <SID>xx
-let s:sid = substitute(s:sid, 'xx', '', '')
-
-"{{{ FoldText
-function! s:Num2S(num, len)
-    let filler = "                                                            "
-    let text = '' . a:num
-    return strpart(filler, 1, a:len - strlen(text)) . text
-endfunction
-
-execute 'set foldtext=' .  s:sid . 'MyNewFoldText()'
-function! <SID>MyNewFoldText()
-  let linenum = v:foldstart
-  while linenum <= v:foldend
-      let line = getline(linenum)
-      if !exists("b:foldsearchprefix") || match(line, b:foldsearchprefix) == -1
-    break
-      else
-    let linenum = linenum + 1
-      endif
-  endwhile
-  if exists("b:foldsearchprefix") && match(line, b:foldsearchprefix) != -1
-      " all lines matched the prefix regexp
-      let line = getline(v:foldstart)
-  endif
-  let sub = substitute(line, '/\*\|\*/\|{{{\d\=', '', 'g')
-  let diff = v:foldend - v:foldstart + 1
-  return  '+ [' . s:Num2S(diff,4) . ']' . sub
-endfunction
-
-"{{{~foldsearch adapted from t77: Fold on search result (Fs <pattern>)
-"Fs pattern Fold search
-"Vimtip put to good use by Ralph Amissah zxy@irc.freenode.net
-"Modified by Mauricio Fernandez <mfp@acm.org>
-function! Foldsearch(search)
-  setlocal fdm=manual
-  let origlineno = line(".")
-  normal zE
-  normal G$
-  let folded = 0     "flag to set when a fold is found
-  let flags = "w"    "allow wrapping in the search
-  let line1 =  0     "set marker for beginning of fold
-  if a:search == ""
-      if exists("b:foldsearchexpr")
-    let searchre = b:foldsearchexpr
-      else
-    "Default value, suitable for Ruby scripts
-    "\(^\s*\(\(def\|class\|module\)\s\)\)\|^\s*[#%"0-9]\{0,4\}\s*{\({{\|!!\)
-    let searchre = '\v(^\s*(def|class|module|attr_reader|attr_accessor|alias_method)\s' .
-                 \ '|^\s*\w+attr_(reader|accessor)\s|^\s*[#%"0-9]{0,4}\s*\{(\{\{|!!))' .
-                 \ '|^\s*[A-Z]\w+\s*\='
-    let b:foldsearchexpr = searchre
-      endif
-  else
-      let searchre = a:search
-  endif
-  while search(searchre, flags) > 0
-    let  line2 = line(".")
-    while line2 - 1 >= line1 && line2 - 1 > 0 "sanity check
-       let prevline = getline(line2 - 1)
-       if exists("b:foldsearchprefix") && (match(prevline, b:foldsearchprefix) != -1)
-           let line2 = line2 - 1
-       else
-           break
-       endif
-    endwhile
-    if (line2 -1 >= line1)
-      execute ":" . line1 . "," . (line2-1) . "fold"
-      let folded = 1       "at least one fold has been found
-    endif
-    let line1 = line2     "update marker
-    let flags = "W"       "turn off wrapping
-  endwhile
-  normal $G
-  let  line2 = line(".")
-  if (line2  >= line1 && folded == 1)
-    execute ":". line1 . "," . line2 . "fold"
-  endif
-  execute "normal " . origlineno . "G"
-endfunction
-
-"{{{~folds Fold Patterns
-" Command is executed as ':Fs pattern'"
-command! -nargs=? -complete=command Fs call Foldsearch(<q-args>)
-command! -nargs=? -complete=command Fold call Foldsearch(<q-args>)
-"command! R Fs \(^\s*\(\(def\|class\|module\)\s\)\)\|^\s*[#%"0-9]\{0,4\}\s*{\({{\|!!\)
-command! RF Fs
 
