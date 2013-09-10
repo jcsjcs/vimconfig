@@ -5,20 +5,19 @@
 " F6 = Toggle Gundo tree (Graph of undo tree)
 " F7 = Toggle tagslist (list of classes & methods in code)
 " F8 = Show YankRing (:YRShow)
-" ,z = Show/Hide NERDTree
-" ,h = Hide search highlights
-" ,k = Toggle display of scratchpad
-" ,w = Show/Hide whitespace characters
-" ,t = FuzzyFinder file search
-" ,u = FuzzyFinder buffer search
-" ,p = Toggle spellcheck on and off
-" ,x = Edit .vimrc in a new tab
+" \h = Hide search highlights
+" \k = Toggle display of scratchpad
+" \n = Toggle line numbers on and off
+" \o = CtrlP - find files
+" \p = Toggle spellcheck on and off
+" \w = Show/Hide whitespace characters
+" \x = Edit .vimrc in a new tab
 " ALT -up/down = move line (or visual selection) up/down
 " ----- Open file from same dir as current file:
-" ,ew = Open in this window
-" ,es = Open in split window
-" ,ev = Open in vertical split
-" ,et = Open in new tab
+" \ew = Open in this window
+" \es = Open in split window
+" \ev = Open in vertical split
+" \et = Open in new tab
 " -----
 " VISUAL MODE
 " r = replace visual selection with buffer but don't yank replaced text. (can replace multiple times)
@@ -27,18 +26,6 @@
 " -----
 " RB Open the Ruby ApiDock page for the word under cursor, in a new browser tab
 " RR Open the Rails ApiDock page for the word under cursor, in a new browser tab
-" -----
-" RUBY DEBUGGER plugin:
-" ,b  :toggle_breakpoint
-" ,v  :open_variables
-" ,m  :open_breakpoints
-" ,t  :open_frames
-" ,s  :step
-" ,f  :finish
-" ,n  :next
-" ,c  :continue
-" ,e  :exit
-" ,d  :remove_breakpoints
 " -----
 "=====================================================
 " aid TO LEARNING VIM: disable arrow keys:
@@ -68,18 +55,12 @@ Bundle 'gmarik/vundle'
 
 Bundle 'scrooloose/syntastic'
 Bundle 'tpope/vim-fugitive'
-"yuriyvolkov/vim-snipmate
-"rafaelfranca/snipmate-snippets
-"
-"astashov/vim-ruby-debugger
-Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-rails'
 Bundle 'tpope/vim-unimpaired'
 Bundle 'tsaleh/vim-align'
 Bundle 'tpope/vim-markdown'
-Bundle 'hallettj/jslint.vim'
 Bundle 'kana/vim-textobj-user'
 Bundle 'nelstrom/vim-textobj-rubyblock'
 Bundle 'tomtom/tcomment_vim'
@@ -87,13 +68,15 @@ Bundle 'kchmck/vim-coffee-script'
 Bundle 'tsaleh/vim-shoulda'
 Bundle 'tpope/vim-repeat'
 Bundle 'sjl/gundo.vim'
-Bundle 'fholgado/minibufexpl.vim'
 Bundle 'vim-scripts/grep.vim'
 Bundle 'scratch'
-Bundle 'YankRing.vim'
 Bundle 'miripiruni/CSScomb-for-Vim'
+Bundle 'Headlights'
+Bundle 'bling/vim-airline'
+Bundle 'jelera/vim-javascript-syntax'
+Bundle 'moll/vim-bbye'
+Bundle 'kien/ctrlp.vim'
 
-Bundle 'git://git.wincent.com/command-t.git'
 " My help docs - Usage: ':help me'
 " Included here as a bundle even though it is not hosted on github.
 " Required for the help command to find it, but will dispay error during
@@ -104,15 +87,15 @@ syntax on
 filetype plugin indent on     " required! 
 
 set hidden " Manage buffers well - remember undo's etc.
-let mapleader = ","
 runtime macros/matchit.vim " Allow % to jump between if/else/end and <> as well as (), {}
 set wildmenu " TAB on a command will list similar commands, not just choose the 1st match
 set wildmode=list:longest " Completion similar to a shell
+set wildignore+=vendor/bundle/**,doc/**,tmp/**,*.zip " Stop ctrl-P from searching in vendored gems dir.
 " Search case-insensitive unless a capital letter is in the search term:
 set ignorecase
 set smartcase
 " Toggle display of end of line, tabs and trailing whitespace
-" set listchars=tab:>-,trail:·,eol:$
+"set listchars=tab:>-,trail:·,eol:$
 " set listchars=tab:▸\ ,eol:¬
 set listchars=tab:▸\ ,trail:·,eol:$
 nmap <silent> <leader>w :set nolist!<CR>
@@ -132,20 +115,19 @@ set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 " Treat all numbers as decimal (not octal)
 set nrformats=
 
+" For Align command, align only the 1st occurrence on a line, e.g:
+" a = b = c
+" aa = bb = cc
+" becomes:
+" a  = b = c
+" aa = bb = cc
+" instead of:
+" a  = b  = c
+" aa = bb = cc
+:call Align#AlignCtrl('l:')
+
 " Add recently accessed projects menu (project plugin)
 set viminfo^=!
-
-" Minibuffer Explorer Settings
-let g:miniBufExplMapWindowNavVim = 1    " CTRL + [hjkl] to nav windows
-let g:miniBufExplMapWindowNavArrows = 1 " CTRL + arrow keys
-let g:miniBufExplMapCTabSwitchBufs = 1  " CTRL-Tab and CTRL-SHift-Tab to switch buffers
-let g:miniBufExplModSelTarget = 1       " Avoid opening a buffer in the NERDTree window
-let g:miniBufExplCheckDupeBufs = 0      " Avoid duplicate buffer check... https://github.com/fholgado/minibufexpl.vim/issues/6
-
-" File explorer settings:
-let g:netrw_liststyle=3 " Use tree-mode as default view
-let g:netrw_browse_split=4 " Open file in previous buffer
-let g:netrw_preview=1 " preview window shown in a vertically split
 
 " Change which file opens after executing :Rails command
 let g:rails_default_file='config/database.yml'
@@ -170,10 +152,45 @@ if has("autocmd")
 
 endif
 
+" " Try to get the cursor to change - gnome-terminal
+" if has("autocmd")
+"   au InsertEnter * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
+"   au InsertLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
+"   "au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
+"   au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
+" endif
+
+" if &term =~ '^xterm'
+"   " solid underscore
+"   let &t_SI .= "\<Esc>[4 q"
+"   " solid block
+"   let &t_EI .= "\<Esc>[2 q"
+"   " 1 or 0 -> blinking block
+"   " 3 -> blinking underscore
+"   " Recent versions of xterm (282 or above) also support
+"   " 5 -> blinking vertical bar
+"   " 6 -> solid vertical bar
+" endif
+
 " Edit .vimrc file
 nmap <leader>x :tabedit $MYVIMRC<CR>
-map <leader>o :CommandT<CR>
+map <leader>o :CtrlP<CR>
+" Delete current buffer (but retain window). uses bbye plugin.
+nnoremap <Leader>q :Bdelete<CR>
 
+" Fix to get arrows to work in screen-256colors terminal (under tmux)
+" nnoremap <Esc>A <up>
+" nnoremap <Esc>B <down>
+" nnoremap <Esc>C <right>
+" nnoremap <Esc>D <left>
+" inoremap <Esc>A <up>
+" inoremap <Esc>B <down>
+" inoremap <Esc>C <right>
+" inoremap <Esc>D <left>
+" map OA <up>
+" map OB <down>
+" map OC <right>
+" map OD <left>
 " COLOURSCHEME :
 " Force the terminal to 256 colours.
 " Otherwise the molokai theme will not work/
@@ -204,19 +221,6 @@ set nu  " Line numbers on
 " set nowrap  " Line wrapping off
 set timeoutlen=250  " Time to wait after ESC (default causes an annoying delay)
 
-" Minibuffer Explorer COLOUR Settings
-"hi MBENormal guifg=lightblue guibg=black ctermfg=lightblue ctermbg=black
-"hi MBEChanged guifg=yellow guibg=black ctermfg=white ctermbg=lightblue
-"hi MBEVisibleNormal guifg=green guibg=black ctermfg=green ctermbg=black
-"hi MBEVisibleChanged guifg=lightgreen guibg=black ctermfg=white ctermbg=lightgreen
-" MiniBufExpl Colors
-hi MBEVisibleActive guifg=#A6DB29 guibg=bg ctermfg=green ctermbg=bg
-hi MBEVisibleChangedActive guifg=#F1266F guibg=bg ctermfg=magenta ctermbg=bg
-hi MBEVisibleChanged guifg=#F1266F guibg=bg ctermfg=magenta ctermbg=bg
-hi MBEVisibleNormal guifg=#5DC2D6 guibg=bg ctermfg=lightblue ctermbg=bg
-hi MBEChanged guifg=#CD5907 guibg=bg ctermfg=brown ctermbg=bg
-hi MBENormal guifg=#808080 guibg=bg ctermfg=gray ctermbg=bg
-
 " Formatting
 set ts=2          " Tabs are 2 spaces
 set bs=2          " Backspace over everything in insert mode
@@ -228,7 +232,6 @@ set smarttab
 
 " Spelling
 " Toggle spell checking on and off with `,p`
-let mapleader = ","
 nmap <silent> <leader>p :set spell!<CR>
  
 " Set region to British English
@@ -253,10 +256,11 @@ let g:syntastic_auto_loc_list=1
 set mousehide  " Hide mouse after chars typed
 set mouse=a  " Mouse in all modes
 
-"-------------------------------------------------
-" map <Leader>t :FuzzyFinderTextMate<CR>
-" map <leader>u :FuzzyFinderBuffer<CR>
-map <leader>z :execute 'NERDTreeToggle ' . getcwd()<CR>
+let g:airline_theme='solarized'
+"let g:airline_enable_fugitive=1
+"let g:airline_enable_syntastic=1
+"let g:airline_exclude_preview=0
+
 "-------------------------------------------------
 " For opening files from the same directory as the current file:
 map <leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
@@ -287,6 +291,9 @@ nmap <leader>D :bufdo bd<CR>
 nnoremap <leader><leader> <C-^>
 "-------------------------------------------------
 
+" Toggle numbers on and off
+:nnoremap <leader>n :setlocal number!<cr>
+
 " Strip trailing blanks from the whole file:
 function! <SID>StripTrailingWhitespaces()
     " Preparation: save last search, and cursor position.
@@ -313,8 +320,19 @@ let Tlist_Enable_Fold_Column = 0  " no fold column (only showing one file)
 "-------------------------------------------------
 
 " YankRing - shared clipboard
-nnoremap <silent> <F8> :YRShow<CR>
+"nnoremap <silent> <F8> :YRShow<CR>
 "-------------------------------------------------
+
+" Change * and # in visual mode to search for the highlighted text instead of
+" extending the selection to the next matching word.
+xnoremap * :<C-u>call <SID>VSetSearch()<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>call <SID>VSetSearch()<CR>?<C-R>=@/<CR><CR>
+function! s:VSetSearch()
+  let temp = @s
+  norm! gv"sy
+  let @/ = '\V' . substitute(escape(@s, '/\'), '\n', '\\n', 'g')
+  let @s = temp
+endfunction
 
 " Toggle the Scratch pad with ,k
 function! ToggleScratch()
@@ -355,12 +373,14 @@ endif
 "-------------------------------------------------
 " When editing a git commit message (.git/COMMIT_EDITMSG) you often won't start on the first line.
 " http://vim.wikia.com/wiki/Always_start_on_first_line_of_git_commit_message
-function MyBufEnter()
-  " don't (re)store filepos for git commit message files
-  if &filetype == "gitcommit"
-    call setpos('.', [0, 1, 1, 0])
-  endif
-endfunction
+if !exists("*MyBufEnter")
+  function MyBufEnter()
+    " don't (re)store filepos for git commit message files
+    if &filetype == "gitcommit"
+      call setpos('.', [0, 1, 1, 0])
+    endif
+  endfunction
+endif
 au BufEnter * call MyBufEnter()
 "-------------------------------------------------
 
