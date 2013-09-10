@@ -5,6 +5,7 @@
 " F6 = Toggle Gundo tree (Graph of undo tree)
 " F7 = Toggle tagslist (list of classes & methods in code)
 " F8 = Show YankRing (:YRShow)
+" \f = CtrlP - find functions
 " \h = Hide search highlights
 " \k = Toggle display of scratchpad
 " \n = Toggle line numbers on and off
@@ -76,12 +77,19 @@ Bundle 'bling/vim-airline'
 Bundle 'jelera/vim-javascript-syntax'
 Bundle 'moll/vim-bbye'
 Bundle 'kien/ctrlp.vim'
+Bundle 'tacahiroy/ctrlp-funky'
+Bundle 'jasoncodes/ctrlp-modified.vim'
 
 " My help docs - Usage: ':help me'
 " Included here as a bundle even though it is not hosted on github.
 " Required for the help command to find it, but will dispay error during
 " :BundleInstall
 Bundle 'me'
+
+let g:ctrlp_extensions = ['funky']
+nnoremap <Leader>f :CtrlPFunky<Cr>
+map <Leader>m :CtrlPModified<CR>
+map <Leader>M :CtrlPBranch<CR>
 
 syntax on
 filetype plugin indent on     " required! 
