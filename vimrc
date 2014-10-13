@@ -8,9 +8,12 @@
 " \f = CtrlP - find functions
 " \h = Hide search highlights
 " \k = Toggle display of scratchpad
+" \l = CtrlPMRU - Most Recently Used files
+" \m = CtrlP - git modified files
 " \n = Toggle line numbers on and off
 " \o = CtrlP - find files
 " \p = Toggle spellcheck on and off
+" \r = Toggle rainbowparentheses on and off
 " \w = Show/Hide whitespace characters
 " \x = Edit .vimrc in a new tab
 " ALT -up/down = move line (or visual selection) up/down
@@ -51,21 +54,27 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
 " let Vundle manage Vundle
-" required! 
+" required!
 Bundle 'gmarik/vundle'
 
+Bundle 'sheerun/vim-polyglot'
+Bundle 'atweiden/vim-betterdigraphs'
 Bundle 'scrooloose/syntastic'
 Bundle 'tpope/vim-fugitive'
-Bundle 'scrooloose/nerdcommenter'
+"Bundle 'scrooloose/nerdcommenter' " using tcomment
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-rails'
 Bundle 'tpope/vim-unimpaired'
-Bundle 'tsaleh/vim-align'
-Bundle 'tpope/vim-markdown'
+"Bundle 'tpope/vim-vinegar' " plugin on top of netrw (use - to access and go up folders) ... https://github.com/tpope/vim-vinegar/issues/5
+"Bundle 'catesandrew/vim-align'
+Bundle 'godlygeek/tabular'
+"poly
+"Bundle 'tpope/vim-markdown'
 Bundle 'kana/vim-textobj-user'
 Bundle 'nelstrom/vim-textobj-rubyblock'
 Bundle 'tomtom/tcomment_vim'
-Bundle 'kchmck/vim-coffee-script'
+"poly
+"Bundle 'kchmck/vim-coffee-script'
 Bundle 'tsaleh/vim-shoulda'
 Bundle 'tpope/vim-repeat'
 Bundle 'sjl/gundo.vim'
@@ -74,11 +83,26 @@ Bundle 'scratch'
 Bundle 'miripiruni/CSScomb-for-Vim'
 Bundle 'Headlights'
 Bundle 'bling/vim-airline'
-Bundle 'jelera/vim-javascript-syntax'
+Bundle 'paranoida/vim-airlineish'
+"poly
+"Bundle 'jelera/vim-javascript-syntax'
 Bundle 'moll/vim-bbye'
 Bundle 'kien/ctrlp.vim'
+Bundle 'kien/rainbow_parentheses.vim'
+"Bundle 'amdt/vim-niji'
 Bundle 'tacahiroy/ctrlp-funky'
 Bundle 'jasoncodes/ctrlp-modified.vim'
+Bundle 'corntrace/bufexplorer'
+" THIS SLOWS DOWN SPLIT WINDOWS IN A TERMINAL
+Bundle 'majutsushi/tagbar'
+
+Bundle 'mattboehm/vim-unstack'
+Bundle 'itchyny/calendar.vim'
+Bundle 'gavinbeatty/vmath.vim'
+Bundle 'gavinbeatty/dragvisuals.vim'
+Bundle 'rking/ag.vim'
+Bundle 'JazzCore/ctrlp-cmatcher'
+"Bundle 'gavinbeatty/hudigraphs.vim'
 
 " My help docs - Usage: ':help me'
 " Included here as a bundle even though it is not hosted on github.
@@ -86,13 +110,8 @@ Bundle 'jasoncodes/ctrlp-modified.vim'
 " :BundleInstall
 Bundle 'me'
 
-let g:ctrlp_extensions = ['funky']
-nnoremap <Leader>f :CtrlPFunky<Cr>
-map <Leader>m :CtrlPModified<CR>
-map <Leader>M :CtrlPBranch<CR>
-
 syntax on
-filetype plugin indent on     " required! 
+filetype plugin indent on     " required!
 
 set hidden " Manage buffers well - remember undo's etc.
 runtime macros/matchit.vim " Allow % to jump between if/else/end and <> as well as (), {}
@@ -132,7 +151,7 @@ set nrformats=
 " instead of:
 " a  = b  = c
 " aa = bb = cc
-:call Align#AlignCtrl('l:')
+":call Align#AlignCtrl('l:')
 
 " Add recently accessed projects menu (project plugin)
 set viminfo^=!
@@ -159,6 +178,10 @@ if has("autocmd")
   \ endif
 
 endif
+" TEMPORARY CHANGE - bug in css syntax: https://github.com/JulesWang/css.vim/pull/16#issuecomment-25000414
+autocmd BufNewFile,BufRead,BufWinEnter *.rb setl isk+=_ | setg isk+=_
+autocmd BufNewFile,BufRead,BufWinEnter *.rhtml setg isk+=_ | setl isk+=_
+autocmd BufNewFile,BufRead,BufWinEnter *.erb setg isk+=_ | setl isk+=_
 
 " " Try to get the cursor to change - gnome-terminal
 " if has("autocmd")
@@ -183,8 +206,35 @@ endif
 " Edit .vimrc file
 nmap <leader>x :tabedit $MYVIMRC<CR>
 map <leader>o :CtrlP<CR>
+map <leader>l :CtrlPMRU<CR>
+
+let g:ctrlp_extensions = ['funky']
+let g:ctrlp_funky_syntax_highlight = 1
+let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+nnoremap <Leader>f :CtrlPFunky<Cr>
+map <Leader>m :CtrlPModified<CR>
 " Delete current buffer (but retain window). uses bbye plugin.
 nnoremap <Leader>q :Bdelete<CR>
+
+" Calendar - link to Google
+let g:calendar_google_calendar = 1
+let g:calendar_google_task = 1
+
+" Calculate sum, min, max & avg of selected text.
+" Results in registers "s,"a,"n,"x.
+vmap <expr>  ++  VMATH_YankAndAnalyse()
+nmap         ++  vip++
+
+" Drag visual blocs/lines around.
+vmap  <expr>  <S-LEFT>   DVB_Drag('left')
+vmap  <expr>  <S-RIGHT>  DVB_Drag('right')
+vmap  <expr>  <S-DOWN>   DVB_Drag('down')
+vmap  <expr>  <S-UP>     DVB_Drag('up')
+vmap  <expr>  D          DVB_Duplicate()
+
+" Change CTRL-K to auto-display possible digraphs.
+inoremap <expr>  <C-K>   BDG_GetDigraph()
+"inoremap <expr>  <C-K>   HUDG_GetDigraph()
 
 " Fix to get arrows to work in screen-256colors terminal (under tmux)
 " nnoremap <Esc>A <up>
@@ -213,12 +263,12 @@ colorscheme codeschool
 autocmd User Rails let b:surround_{char2nr('-')} = "<% \r %>" " displays <% %> correctly
 
 " "peaksea colour:
-" if ! has("gui_running") 
-"   set t_Co=256 
-" endif 
-" " feel free to choose :set background=light for a different style 
-" set background=dark 
-" colors peaksea 
+" if ! has("gui_running")
+"   set t_Co=256
+" endif
+" " feel free to choose :set background=light for a different style
+" set background=dark
+" colors peaksea
 
 set cf  " Enable error files & error jumping.
 " set clipboard+=unnamed  " Yanks go on clipboard instead.
@@ -241,7 +291,7 @@ set smarttab
 " Spelling
 " Toggle spell checking on and off with `,p`
 nmap <silent> <leader>p :set spell!<CR>
- 
+
 " Set region to British English
 set spelllang=en_gb
 
@@ -264,11 +314,17 @@ let g:syntastic_auto_loc_list=1
 set mousehide  " Hide mouse after chars typed
 set mouse=a  " Mouse in all modes
 
-let g:airline_theme='solarized'
+"let g:airline_theme='solarized'
 "let g:airline_enable_fugitive=1
 "let g:airline_enable_syntastic=1
 "let g:airline_exclude_preview=0
+let g:airline_theme = 'airlineish'
+let g:airline#extensions#tabline#enabled = 1
+"let g:airline_powerline_fonts = 1
 
+"-------------------------------------------------
+" BufferExplorer - default sort order of files is by name:
+let g:bufExplorerSortBy='name'
 "-------------------------------------------------
 " For opening files from the same directory as the current file:
 map <leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
@@ -276,14 +332,48 @@ map <leader>es :sp <C-R>=expand("%:p:h") . "/" <CR>
 map <leader>ev :vsp <C-R>=expand("%:p:h") . "/" <CR>
 map <leader>et :tabe <C-R>=expand("%:p:h") . "/" <CR>
 "-------------------------------------------------
+" select last paste in visual mode
+nnoremap <expr> gb '`[' . strpart(getregtype(), 0, 1) . '`]'
+
+"-------------------------------------------------
 " Save a root-permission file with sudo after opening as user:
 "cmap W w !sudo tee % >/dev/null
 "cmap w!! %!sudo tee > /dev/null %
 "-------------------------------------------------
 " Visual mode - press r to replace text without yanking replaced text:
 "vmap r "_dP
-vmap r "_c<Esc>pp
+"vmap r "_c<Esc>pp
 
+"-------------------------------------------------
+" Cursor settings. This makes terminal vim sooo much nicer!
+" Tmux will only forward escape sequences to the terminal if surrounded by a DCS
+" sequence
+" if exists('$TMUX')
+"   let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+"   let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+" else
+"   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+"   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+" endif
+"-------------------------------------------------
+" Split window navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+"-------------------------------------------------
+" Use tab key to jump between brackets
+nnoremap <tab> %
+vnoremap <tab> %
+
+"-------------------------------------------------
+" Toggle RainbowParentheses
+nnoremap <leader>r :RainbowParenthesesToggleAll<CR>
+"nnoremap <leader>r :RainbowParenthesesToggle<CR>
+"let g:loaded_niji = 1
+"nnoremap <leader>r :setlocal number!<cr>
+"let g:niji_match_all_filetypes = 0
 "-------------------------------------------------
 " Bubble single lines
 nmap <M-Up> ddkP
@@ -294,7 +384,7 @@ vmap <M-Down> xp`[V`]
 "-------------------------------------------------
 " Close all buffers
 nmap <leader>D :bufdo bd<CR>
- 
+
 " Switch between last two buffers
 nnoremap <leader><leader> <C-^>
 "-------------------------------------------------
@@ -320,11 +410,13 @@ nnoremap <silent> <F5> :call <SID>StripTrailingWhitespaces()<CR>
 " Graph of undo tree:
 nnoremap <F6> :GundoToggle<CR>
 "-------------------------------------------------
+" Toggle tagbar
+nmap <F7> :TagbarToggle<CR>
 " Toggle tagslist
-nnoremap <silent> <F7> :TlistToggle<CR>
-let Tlist_Exit_OnlyWindow = 1     " exit if taglist is last window open
-let Tlist_Show_One_File = 1       " Only show tags for current buffer
-let Tlist_Enable_Fold_Column = 0  " no fold column (only showing one file)
+" nnoremap <silent> <F7> :TlistToggle<CR>
+" let Tlist_Exit_OnlyWindow = 1     " exit if taglist is last window open
+" let Tlist_Show_One_File = 1       " Only show tags for current buffer
+" let Tlist_Enable_Fold_Column = 0  " no fold column (only showing one file)
 "-------------------------------------------------
 
 " YankRing - shared clipboard
@@ -344,14 +436,48 @@ endfunction
 
 " Toggle the Scratch pad with ,k
 function! ToggleScratch()
-  if expand('%') == g:ScratchBufferName
+  if expand('%') == g:scratch_buffer_name
     quit
   else
-    Sscratch
+    ScratchOpen
   endif
 endfunction
 
 map <leader>k :call ToggleScratch()<CR>
+"-------------------------------------------------
+" Execute code - from http://www.oinksoft.com/blog/view/6/
+" Uses CTRL-P mapping.
+
+"      \'ruby': 'ruby',
+let ft_stdout_mappings = {
+      \'bash': 'bash',
+      \'haskell': 'runghc',
+      \'javascript': 'node',
+      \'lisp': 'sbcl',
+      \'nodejs': 'node',
+      \'ocaml': 'ocaml',
+      \'perl': 'perl',
+      \'php': 'php',
+      \'python': 'python',
+      \'ruby': '~/.rvm/bin/ruby',
+      \'scheme': 'scheme',
+      \'sh': 'sh',
+      \'sml': 'sml'
+      \}
+for ft_name in keys(ft_stdout_mappings)
+  execute 'autocmd Filetype ' . ft_name . ' nnoremap <buffer> <C-P> :write !'
+        \. ft_stdout_mappings[ft_name] . '<CR>'
+endfor
+let ft_execute_mappings = {
+      \'c': 'gcc -o %:r -Wall -std=c99 % && ./%:r',
+      \'erlang': 'escript %',
+      \'pascal': 'fpc % && ./%:r'
+      \}
+for ft_name in keys(ft_execute_mappings)
+  execute 'autocmd FileType ' . ft_name
+        \. ' nnoremap <buffer> <C-P> :write \| !'
+        \. ft_execute_mappings[ft_name] . '<CR>'
+endfor
 "-------------------------------------------------
 
 "let g:browser = 'firefox -new-tab '
@@ -376,7 +502,7 @@ noremap RR :call OpenRailsDoc(expand('<cword>'))<CR>
 " Only define it when not defined already.
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
-		  \ | wincmd p | diffthis
+      \ | wincmd p | diffthis
 endif
 "-------------------------------------------------
 " When editing a git commit message (.git/COMMIT_EDITMSG) you often won't start on the first line.
