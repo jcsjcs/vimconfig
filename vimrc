@@ -50,12 +50,13 @@ set nocompatible  " We don't want vi compatibility.
 "call pathogen#infect()
 filetype off                   " required!
 
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set runtimepath+=~/.vim/bundle/Vundle.vim/
+call vundle#begin()
 
 " let Vundle manage Vundle
 " required!
-Bundle 'gmarik/vundle'
+Plugin 'gmarik/Vundle.vim'
+" Bundle 'gmarik/vundle'
 
 Bundle 'sheerun/vim-polyglot'
 Bundle 'atweiden/vim-betterdigraphs'
@@ -104,20 +105,73 @@ Bundle 'rking/ag.vim'
 Bundle 'JazzCore/ctrlp-cmatcher'
 "Bundle 'gavinbeatty/hudigraphs.vim'
 
+Plugin 'SirVer/ultisnips'
+Plugin 'gorkunov/smartgf.vim'
+Plugin 'haya14busa/incsearch.vim'
+Plugin 'shime/vim-livedown'
+" Open man pages in vim with 'vman xyz' (alias 'vman' defined in .bash_aliases)
+Plugin 'Z1MM32M4N/vim-superman'
+
 " My help docs - Usage: ':help me'
 " Included here as a bundle even though it is not hosted on github.
 " Required for the help command to find it, but will dispay error during
 " :BundleInstall
 Bundle 'me'
 
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
 syntax on
 filetype plugin indent on     " required!
+
+" --- END OF VUNDLE CONFIG ---
 
 set hidden " Manage buffers well - remember undo's etc.
 runtime macros/matchit.vim " Allow % to jump between if/else/end and <> as well as (), {}
 set wildmenu " TAB on a command will list similar commands, not just choose the 1st match
 set wildmode=list:longest " Completion similar to a shell
-set wildignore+=vendor/bundle/**,doc/**,tmp/**,*.zip " Stop ctrl-P from searching in vendored gems dir.
+set wildignore+=vendor/bundle/**,doc/**,tmp/**,hold/** ",*.zip " Stop ctrl-P from searching in vendored gems dir.
+
+" Disable output and VCS files
+set wildignore+=*.o,*.out,*.obj,.git,*.rbc,*.rbo,*.class,.svn ",*.gem
+
+" Ignore images and log files
+set wildignore+=*.gif,*.jpg,*.png,*.log
+
+" Disable archive files
+set wildignore+=*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz
+
+" Ignore bundler and sass cache
+set wildignore+=*/vendor/gems/*,*/vendor/cache/*,*/.bundle/*,*/.sass-cache/*
+
+" Ignore rails temporary asset caches
+set wildignore+=*/tmp/cache/assets/*/sprockets/*,*/tmp/cache/assets/*/sass/*
+
+" Ignore custom folders
+set wildignore+=*/resources/*
+
+" Ignore node modules
+set wildignore+=node_modules/*
+
+" Disable temp and backup files
+set wildignore+=*.swp,*~,._*
+
+" Disable osx index files
+set wildignore+=.DS_Store
+
+" Resize vim windows whenever the terminal window resizes. (For TMux)
+autocmd VimResized * :wincmd =
+
+" tmux will only forward escape sequences to the terminal if surrounded by a DCS sequence
+" http://sourceforge.net/mailarchive/forum.php?thread_name=AANLkTinkbdoZ8eNR1X2UobLTeww1jFrvfJxTMfKSq-L%2B%40mail.gmail.com&forum_name=tmux-users
+" if exists('$TMUX')
+"   let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+"   let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+" else
+"   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+"   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+" endif
+
+
 " Search case-insensitive unless a capital letter is in the search term:
 set ignorecase
 set smartcase
@@ -127,6 +181,9 @@ set smartcase
 set listchars=tab:▸\ ,trail:·,eol:$
 nmap <silent> <leader>w :set nolist!<CR>
 
+" Syntax coloring lines that are too long just slows down the world
+set synmaxcol=1200
+
 " set hls " Highlight search matches
 " set nocp incsearch
 " Highlight search terms...
@@ -134,6 +191,10 @@ set hlsearch
 set incsearch " ...dynamically as they are typed.
 " Toggle highlight search on and off
 nmap <silent> <leader>h :silent :nohlsearch<CR>
+
+" Pressing :W instead of :w will behave like :w.
+cnoreabbrev W w
+
 
 " Store tempfiles in a central spot:
 set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
@@ -159,17 +220,23 @@ set viminfo^=!
 " Change which file opens after executing :Rails command
 let g:rails_default_file='config/database.yml'
 
+" Autocmd in a group so that previous autocmds can be cleared first.
+augroup reload_vimrc " {
+  autocmd!
+  autocmd BufWritePost $MYVIMRC source $MYVIMRC
+augroup END " }
+
 if has("autocmd")
   " Enable filetype detection
   " filetype plugin indent on - already set...
 
   " Source the vimrc file after saving it
-  autocmd bufwritepost .vimrc source $MYVIMRC
+  " autocmd bufwritepost .vimrc source $MYVIMRC
 
   "Set thor files to use Ruby syntax
   "Set rackup files to use Ruby syntax
-  au BufNewFile,BufRead  *.thor    set syntax=ruby
-  au BufNewFile,BufRead  *.ru    set syntax=ruby
+  autocmd BufNewFile,BufRead  *.thor    set syntax=ruby
+  autocmd BufNewFile,BufRead  *.ru    set syntax=ruby
 
   " Restore cursor position
   autocmd BufReadPost *
@@ -183,12 +250,20 @@ autocmd BufNewFile,BufRead,BufWinEnter *.rb setl isk+=_ | setg isk+=_
 autocmd BufNewFile,BufRead,BufWinEnter *.rhtml setg isk+=_ | setl isk+=_
 autocmd BufNewFile,BufRead,BufWinEnter *.erb setg isk+=_ | setl isk+=_
 
+" HIGHLIGHT CURRENT LINE ... is slow in terminal - whole screen needs redraw
+" when cursor moves.
+" set cursorline
+" hi cursorline cterm=none term=none
+" autocmd WinEnter * setlocal cursorline
+" autocmd WinLeave * setlocal nocursorline
+" highlight CursorLine guibg=#303000 ctermbg=234
+
 " " Try to get the cursor to change - gnome-terminal
 " if has("autocmd")
-"   au InsertEnter * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
-"   au InsertLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
-"   "au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
-"   au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
+"   autocmd InsertEnter * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
+"   autocmd InsertLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
+"   "autocmd VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"
+"   autocmd VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"
 " endif
 
 " if &term =~ '^xterm'
@@ -215,6 +290,23 @@ nnoremap <Leader>f :CtrlPFunky<Cr>
 map <Leader>m :CtrlPModified<CR>
 " Delete current buffer (but retain window). uses bbye plugin.
 nnoremap <Leader>q :Bdelete<CR>
+
+" Ruby: search for method usage/definition.
+let g:smartgf_key = 'gm'
+
+" IncSearch plugin
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
+
+" --- UltiSnips
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" If you want :UltiSnipsEdit to split your window.
+" let g:UltiSnipsEditSplit="vertical"
 
 " Calendar - link to Google
 let g:calendar_google_calendar = 1
@@ -258,7 +350,7 @@ set t_Co=256
 "let g:molokai_original = 1
 " colorscheme murphy
 " colorscheme vividchalk
-"colorscheme molokai
+" colorscheme molokai
 colorscheme codeschool
 autocmd User Rails let b:surround_{char2nr('-')} = "<% \r %>" " displays <% %> correctly
 
@@ -270,21 +362,21 @@ autocmd User Rails let b:surround_{char2nr('-')} = "<% \r %>" " displays <% %> c
 " set background=dark
 " colors peaksea
 
-set cf  " Enable error files & error jumping.
+set confirm  " Enable error files & error jumping. -- cf setting
 " set clipboard+=unnamed  " Yanks go on clipboard instead.
 set history=256  " Number of things to remember in history.
 "set autowrite  " Writes on make/shell commands
 set ruler  " Ruler on
-set nu  " Line numbers on
+set number  " Line numbers on
 " set nowrap  " Line wrapping off
 set timeoutlen=250  " Time to wait after ESC (default causes an annoying delay)
 
 " Formatting
-set ts=2          " Tabs are 2 spaces
-set bs=2          " Backspace over everything in insert mode
+set tabstop=2          " Tabs are 2 spaces
+set backspace=2          " Backspace over everything in insert mode
 set shiftwidth=2  " Tabs under smart indent
-set sts=2         " soft tab stop
-set et            " expandtab
+set softtabstop=2         " soft tab stop
+set expandtab            " expandtab
 set autoindent
 set smarttab
 
@@ -297,7 +389,7 @@ set spelllang=en_gb
 
 " Visual
 set showmatch     " Show matching brackets.
-set mat=5         " Bracket blinking.
+set matchtime=5   " Bracket blinking.
 set novisualbell  " No blinking .
 set noerrorbells  " No noise.
 set laststatus=2  " Always show status line.
@@ -339,6 +431,7 @@ nnoremap <expr> gb '`[' . strpart(getregtype(), 0, 1) . '`]'
 " Save a root-permission file with sudo after opening as user:
 "cmap W w !sudo tee % >/dev/null
 "cmap w!! %!sudo tee > /dev/null %
+" cnoremap w!! %!sudo tee > /dev/null %
 "-------------------------------------------------
 " Visual mode - press r to replace text without yanking replaced text:
 "vmap r "_dP
@@ -515,6 +608,6 @@ if !exists("*MyBufEnter")
     endif
   endfunction
 endif
-au BufEnter * call MyBufEnter()
+autocmd BufEnter * call MyBufEnter()
 "-------------------------------------------------
 
