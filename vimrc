@@ -1,10 +1,12 @@
 "=====================================================
 " STUFF TO REMEMBER
 " -----------------
+" K  = Use ag to search for the word under the cursor
 " F5 = Strip trailing whitespace from the file
 " F6 = Toggle Gundo tree (Graph of undo tree)
 " F7 = Toggle tagslist (list of classes & methods in code)
 " F8 = Show YankRing (:YRShow)
+" \d = Open directory listing for the current file
 " \f = CtrlP - find functions
 " \h = Hide search highlights
 " \k = Toggle display of scratchpad
@@ -14,6 +16,11 @@
 " \o = CtrlP - find files
 " \p = Toggle spellcheck on and off
 " \r = Toggle rainbowparentheses on and off
+" \t = Generate ctags for the project
+" \ta  = Run full test suite                (:TestSuite)
+" \tf  = Run current test file              (:TestFile)
+" \tn  = Run nearest test to cursor in file (:TestNearest)
+" \tt  = Run whatever test was last run     (:TestLast)
 " \w = Show/Hide whitespace characters
 " \x = Edit .vimrc in a new tab
 " ALT -up/down = move line (or visual selection) up/down
@@ -56,40 +63,30 @@ call vundle#begin()
 " let Vundle manage Vundle
 " required!
 Plugin 'gmarik/Vundle.vim'
-" Bundle 'gmarik/vundle'
 
 Bundle 'sheerun/vim-polyglot'
 Bundle 'atweiden/vim-betterdigraphs'
-Bundle 'scrooloose/syntastic'
+" Bundle 'scrooloose/syntastic'
 Bundle 'tpope/vim-fugitive'
-"Bundle 'scrooloose/nerdcommenter' " using tcomment
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-rails'
 Bundle 'tpope/vim-unimpaired'
-"Bundle 'tpope/vim-vinegar' " plugin on top of netrw (use - to access and go up folders) ... https://github.com/tpope/vim-vinegar/issues/5
-"Bundle 'catesandrew/vim-align'
 Bundle 'godlygeek/tabular'
-"poly
-"Bundle 'tpope/vim-markdown'
+Plugin 'janko-m/vim-test' " Run tests within vim
 Bundle 'kana/vim-textobj-user'
 Bundle 'nelstrom/vim-textobj-rubyblock'
 Bundle 'tomtom/tcomment_vim'
-"poly
-"Bundle 'kchmck/vim-coffee-script'
 Bundle 'tsaleh/vim-shoulda'
 Bundle 'tpope/vim-repeat'
 Bundle 'sjl/gundo.vim'
 Bundle 'vim-scripts/grep.vim'
 Bundle 'scratch'
 Bundle 'miripiruni/CSScomb-for-Vim'
-Bundle 'Headlights'
 Bundle 'bling/vim-airline'
 Bundle 'paranoida/vim-airlineish'
-"poly
-"Bundle 'jelera/vim-javascript-syntax'
 Bundle 'moll/vim-bbye'
-Bundle 'kien/ctrlp.vim'
-Bundle 'kien/rainbow_parentheses.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'kien/rainbow_parentheses.vim'
 "Bundle 'amdt/vim-niji'
 Bundle 'tacahiroy/ctrlp-funky'
 Bundle 'jasoncodes/ctrlp-modified.vim'
@@ -102,15 +99,18 @@ Bundle 'itchyny/calendar.vim'
 Bundle 'gavinbeatty/vmath.vim'
 Bundle 'gavinbeatty/dragvisuals.vim'
 Bundle 'rking/ag.vim'
-Bundle 'JazzCore/ctrlp-cmatcher'
+Plugin 'JazzCore/ctrlp-cmatcher'
+Plugin 'FelikZ/ctrlp-py-matcher'
 "Bundle 'gavinbeatty/hudigraphs.vim'
 
-Plugin 'SirVer/ultisnips'
 Plugin 'gorkunov/smartgf.vim'
 Plugin 'haya14busa/incsearch.vim'
 Plugin 'shime/vim-livedown'
 " Open man pages in vim with 'vman xyz' (alias 'vman' defined in .bash_aliases)
 Plugin 'Z1MM32M4N/vim-superman'
+" File explorer
+Plugin 'justinmk/vim-dirvish'
+Plugin 'ngmy/vim-rubocop'
 
 " My help docs - Usage: ':help me'
 " Included here as a bundle even though it is not hosted on github.
@@ -158,6 +158,9 @@ set wildignore+=*.swp,*~,._*
 " Disable osx index files
 set wildignore+=.DS_Store
 
+" Delete comment character when joining commented lines
+set formatoptions+=j
+
 " Resize vim windows whenever the terminal window resizes. (For TMux)
 autocmd VimResized * :wincmd =
 
@@ -195,6 +198,8 @@ nmap <silent> <leader>h :silent :nohlsearch<CR>
 " Pressing :W instead of :w will behave like :w.
 cnoreabbrev W w
 
+" bind K to search word under cursor - using silver searcher
+nnoremap K :Ag! "\b<C-R><C-W>\b"<CR>:cw<CR>
 
 " Store tempfiles in a central spot:
 set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
@@ -245,10 +250,6 @@ if has("autocmd")
   \ endif
 
 endif
-" TEMPORARY CHANGE - bug in css syntax: https://github.com/JulesWang/css.vim/pull/16#issuecomment-25000414
-autocmd BufNewFile,BufRead,BufWinEnter *.rb setl isk+=_ | setg isk+=_
-autocmd BufNewFile,BufRead,BufWinEnter *.rhtml setg isk+=_ | setl isk+=_
-autocmd BufNewFile,BufRead,BufWinEnter *.erb setg isk+=_ | setl isk+=_
 
 " HIGHLIGHT CURRENT LINE ... is slow in terminal - whole screen needs redraw
 " when cursor moves.
@@ -285,11 +286,46 @@ map <leader>l :CtrlPMRU<CR>
 
 let g:ctrlp_extensions = ['funky']
 let g:ctrlp_funky_syntax_highlight = 1
-let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+" ********************************************** CMATCHER NOT WORKING ON
+" UBUNTU 16.04...
+" let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 nnoremap <Leader>f :CtrlPFunky<Cr>
 map <Leader>m :CtrlPModified<CR>
+" CTRLP settings recommended by  PYmatcher:
+" Set delay to prevent extra search
+let g:ctrlp_lazy_update = 350
+
+" Do not clear filenames cache, to improve CtrlP startup
+" You can manualy clear it by <F5>
+" let g:ctrlp_clear_cache_on_exit = 0
+
+" Set no file limit, we are building a big project
+let g:ctrlp_max_files = 0
+
+" If ag is available use it as filename list generator instead of 'find'
+if executable("ag")
+    set grepprg=ag\ --nogroup\ --nocolor
+    let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --ignore ''.git'' --ignore ''.DS_Store'' --ignore ''node_modules'' --hidden -g ""'
+endif
 " Delete current buffer (but retain window). uses bbye plugin.
 nnoremap <Leader>q :Bdelete<CR>
+
+" (Re)generate ctags for the current project
+:noremap <Leader>t :!ctags_runner.sh<CR>
+" Shortcuts to quickly run tests:
+nnoremap <leader>ta :TestSuite<cr>
+nnoremap <leader>tf :TestFile<cr>
+nnoremap <leader>tn :TestNearest<cr>
+nnoremap <leader>tt :TestLast<cr>
+
+" NetRW (locally installed as V155 with Ubuntu 16.04 closes file in buffer
+" when opening a new file from the browser.
+" let g:netrw_fastbrowse    = 2 " Cache browser buffer.
+" let g:netrw_keepdir       = 0
+
+" Dirvish - file browser : open dir of current file
+nnoremap <Leader>d :Dirvish %<CR>
 
 " Ruby: search for method usage/definition.
 let g:smartgf_key = 'gm'
@@ -298,15 +334,6 @@ let g:smartgf_key = 'gm'
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
-
-" --- UltiSnips
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
-" If you want :UltiSnipsEdit to split your window.
-" let g:UltiSnipsEditSplit="vertical"
 
 " Calendar - link to Google
 let g:calendar_google_calendar = 1
@@ -344,7 +371,7 @@ inoremap <expr>  <C-K>   BDG_GetDigraph()
 " COLOURSCHEME :
 " Force the terminal to 256 colours.
 " Otherwise the molokai theme will not work/
-set t_Co=256
+" set t_Co=256
 " For the molokai colourscheme:
 " - 0 has a darker bg and darker comment text.
 "let g:molokai_original = 1
@@ -364,6 +391,7 @@ autocmd User Rails let b:surround_{char2nr('-')} = "<% \r %>" " displays <% %> c
 
 set confirm  " Enable error files & error jumping. -- cf setting
 " set clipboard+=unnamed  " Yanks go on clipboard instead.
+" set clipboard=unnamedplus " Yank to all clipboards
 set history=256  " Number of things to remember in history.
 "set autowrite  " Writes on make/shell commands
 set ruler  " Ruler on
@@ -379,6 +407,7 @@ set softtabstop=2         " soft tab stop
 set expandtab            " expandtab
 set autoindent
 set smarttab
+set scrolloff=2 " scroll offset, keeps 2 lines above the cursor
 
 " Spelling
 " Toggle spell checking on and off with `,p`
@@ -398,8 +427,11 @@ set laststatus=2  " Always show status line.
 " set statusline+=%#warningmsg#
 " set statusline+=%{SyntasticStatuslineFlag()}
 " set statusline+=%*
-let g:syntastic_enable_signs=1
-let g:syntastic_auto_loc_list=1
+" let g:syntastic_enable_signs=1
+" let g:syntastic_auto_loc_list=0
+" let g:syntastic_loc_list_height = 5
+" let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_javascript_eslint_exe = 'eslint' " 'npm run lint --'
 " Try to use Ruby1.9 for syntax validation:
 "let g:syntastic_ruby_exec = '~/.rvm/rubies/ruby-1.9.3-p0/bin/ruby'
 " gvim "specific
@@ -552,7 +584,7 @@ let ft_stdout_mappings = {
       \'perl': 'perl',
       \'php': 'php',
       \'python': 'python',
-      \'ruby': '~/.rvm/bin/ruby',
+      \'ruby': 'ruby',
       \'scheme': 'scheme',
       \'sh': 'sh',
       \'sml': 'sml'
