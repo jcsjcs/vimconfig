@@ -30,6 +30,11 @@
 " \ev = Open in vertical split
 " \et = Open in new tab
 " -----
+" MULTIPLE CURSORS (https://github.com/terryma/vim-multiple-cursors)
+" CTRL-N = Select word under cursor. Next C-N will select next word.
+" CTRL-P = Unselect current word.
+" CTRL-X = Unselect current word and select next. (Leave a gap)
+" -----
 " VISUAL MODE
 " r = replace visual selection with buffer but don't yank replaced text. (can replace multiple times)
 " -----
